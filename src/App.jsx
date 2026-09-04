@@ -20,17 +20,6 @@ export default function App() {
     setLoading(false);
   }, []);
 
-  const handleDelete = async (id) => {
-    const { error } = await supabase
-      .from("chandhas")
-      .delete()
-      .eq("id", id);
-
-    if (!error) {
-      fetchEntries();
-    }
-  };
-
   useEffect(() => {
     fetchEntries();
   }, [fetchEntries]);
@@ -64,7 +53,6 @@ export default function App() {
       loading={loading}
       onHome={() => setScreen("home")}
       onAdd={() => setScreen("add")}
-      onDelete={handleDelete}
     />
   );
 }
