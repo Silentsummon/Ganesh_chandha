@@ -21,7 +21,11 @@ export const SERIF = "'Georgia', 'Times New Roman', serif";
 
 export const pageBase = {
   minHeight: "100vh",
-  background: `radial-gradient(ellipse at top, #241C14 0%, ${COLORS.bg} 55%)`,
+  background: `
+    linear-gradient(135deg, rgba(24, 20, 16, 0.92) 0%, rgba(31, 25, 19, 0.92) 100%),
+    url('/ganesha-bg.png') center/cover no-repeat
+  `,
+  backgroundAttachment: "fixed",
   fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
   color: COLORS.cream,
   padding: "40px 20px",

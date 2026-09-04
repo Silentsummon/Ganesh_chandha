@@ -5,7 +5,7 @@ import ChandhaList from "./screens/ChandhaList";
 import { supabase } from "./lib/supabaseClient";
 
 export default function App() {
-  const [screen, setScreen] = useState("home");
+  const [screen, setScreen] = useState("home"); // "home" | "add" | "list"
   const [entries, setEntries] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -19,17 +19,6 @@ export default function App() {
     if (!error && data) setEntries(data);
     setLoading(false);
   }, []);
-
-  const handleDelete = async (id) => {
-    const { error } = await supabase
-      .from("chandhas")
-      .delete()
-      .eq("id", id);
-
-    if (!error) {
-      fetchEntries();
-    }
-  };
 
   useEffect(() => {
     fetchEntries();
@@ -64,7 +53,6 @@ export default function App() {
       loading={loading}
       onHome={() => setScreen("home")}
       onAdd={() => setScreen("add")}
-      onDelete={handleDelete}
     />
   );
 }
