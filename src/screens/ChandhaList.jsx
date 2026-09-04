@@ -1,5 +1,5 @@
 import { COLORS, SERIF, pageBase, card, formatINR } from "../theme";
-import { Watermark, Crest } from "../components/Logo";
+import { Crest } from "../components/Logo";
 import { exportCSV, exportPDF } from "../utils/export";
 
 export default function ChandhaList({ entries, loading, onHome, onAdd }) {
@@ -61,7 +61,6 @@ export default function ChandhaList({ entries, loading, onHome, onAdd }) {
 
   return (
     <div style={pageBase}>
-      <Watermark opacity={0.06} size={480} />
       <div style={{ position: "relative", zIndex: 1, maxWidth: "560px", margin: "0 auto" }}>
         <button
           onClick={onHome}
