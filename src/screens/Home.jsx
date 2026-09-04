@@ -1,5 +1,5 @@
 import { COLORS, SERIF, pageBase, card } from "../theme";
-import { Watermark, Crest } from "../components/Logo";
+import { Crest } from "../components/Logo";
 
 export default function Home({ onAdd, onViewList }) {
   return (
@@ -11,7 +11,6 @@ export default function Home({ onAdd, onViewList }) {
       `,
       backgroundAttachment: "fixed",
     }}>
-      <Watermark opacity={0.09} size={560} />
       <div
         style={{
           position: "relative",
