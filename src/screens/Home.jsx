@@ -3,7 +3,14 @@ import { Watermark, Crest } from "../components/Logo";
 
 export default function Home({ onAdd, onViewList }) {
   return (
-    <div style={pageBase}>
+    <div style={{
+      ...pageBase,
+      background: `
+        linear-gradient(135deg, rgba(24, 20, 16, 0.93) 0%, rgba(31, 25, 19, 0.93) 100%),
+        url('/ganesha-bg.png') center/cover no-repeat
+      `,
+      backgroundAttachment: "fixed",
+    }}>
       <Watermark opacity={0.09} size={560} />
       <div
         style={{
