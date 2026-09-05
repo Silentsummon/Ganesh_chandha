@@ -17,14 +17,12 @@ export default async function handler(req, res) {
   }
 
   try {
-    const message = `Hey ${name}, you've contributed ₹${amount} to Lakshmi Narasima Swamy Youth Association. Thank you! 🙏`;
+    const params = new URLSearchParams();
+    params.append('From', 'whatsapp:+14155238886');
+    params.append('To', `whatsapp:+91${phoneNumber}`);
+    params.append('Body', `Hey ${name}, you've contributed ₹${amount} to Lakshmi Narasima Swamy Youth Association. Thank you! 🙏`);
 
     const auth = Buffer.from(`${TWILIO_ACCOUNT_SID}:${TWILIO_AUTH_TOKEN}`).toString('base64');
-
-    const formData = new URLSearchParams();
-    formData.append('From', 'whatsapp:+14155238886');
-    formData.append('To', `whatsapp:+91${phoneNumber}`);
-    formData.append('Body', message);
 
     const response = await fetch(
       `https://api.twilio.com/2010-04-01/Accounts/${TWILIO_ACCOUNT_SID}/Messages.json`,
@@ -32,18 +30,30 @@ export default async function handler(req, res) {
         method: 'POST',
         headers: {
           'Authorization': `Basic ${auth}`,
+          'Content-Type': 'application/x-www-form-urlencoded',
         },
-        body: formData,
+        body: params.toString(),
       }
     );
 
-    const data = await response.json();
+    const responseText = await response.text();
+    
+    let data;
+    try {
+      data = JSON.parse(responseText);
+    } catch (e) {
+      return res.status(500).json({
+        success: false,
+        error: 'Invalid response from Twilio',
+        response: responseText,
+      });
+    }
 
     if (!response.ok) {
       return res.status(response.status).json({
         success: false,
-        error: data.message || data.code || 'Unknown error',
-        details: data,
+        error: data.message || 'Failed to send',
+        code: data.code,
       });
     }
 
