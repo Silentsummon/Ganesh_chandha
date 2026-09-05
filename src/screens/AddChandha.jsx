@@ -55,11 +55,17 @@ export default function AddChandha({ onHome, onAdded, onViewList, entryCount }) 
     boxShadow: "0 8px 28px rgba(0,0,0,0.35)",
   };
 
+  const handleMobileChange = (e) => {
+    const value = e.target.value.replace(/\D/g, '').slice(0, 10);
+    setMobile(value);
+    if (errors.mobile) setErrors((p) => ({ ...p, mobile: null }));
+  };
+
   const handleAdd = async () => {
     const newErrors = {};
     if (!name.trim()) newErrors.name = "Enter a name";
     if (!mobile.trim()) newErrors.mobile = "Enter a mobile number";
-    if (!/^\d{10}$/.test(mobile.replace(/\D/g, ''))) newErrors.mobile = "Enter a valid 10-digit number";
+    if (mobile.length !== 10) newErrors.mobile = "Enter a valid 10-digit number";
     if (!street.trim()) newErrors.street = "Enter a street";
     if (!amount || Number(amount) <= 0) newErrors.amount = "Enter an amount";
     if (!status) newErrors.status = "Choose paid or pending";
@@ -138,12 +144,20 @@ export default function AddChandha({ onHome, onAdded, onViewList, entryCount }) 
           <div style={{ marginBottom: "20px" }}>
             <label style={label}>Mobile number</label>
             <input
+              type="tel"
+              inputMode="numeric"
               style={{ ...inputBase, borderColor: errors.mobile ? "#D9532F" : inputBase.border }}
-              placeholder="Enter 10-digit mobile number"
+              placeholder="Enter 10-digit number"
               value={mobile}
-              onChange={(e) => { setMobile(e.target.value); if (errors.mobile) setErrors((p) => ({ ...p, mobile: null })); }}
+              maxLength="10"
+              onChange={handleMobileChange}
             />
             {errors.mobile && <div style={errorText}>{errors.mobile}</div>}
+            {mobile.length > 0 && mobile.length < 10 && (
+              <div style={{ fontSize: "12px", color: "#75766A", marginTop: "5px" }}>
+                {10 - mobile.length} digits remaining
+              </div>
+            )}
           </div>
 
           <div style={{ marginBottom: "20px" }}>
