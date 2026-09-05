@@ -13,17 +13,18 @@ export default async function handler(req, res) {
   const TWILIO_AUTH_TOKEN = process.env.TWILIO_AUTH_TOKEN;
 
   if (!TWILIO_ACCOUNT_SID || !TWILIO_AUTH_TOKEN) {
-    console.error('Missing Twilio credentials');
-    return res.status(500).json({ 
-      success: false, 
-      error: 'Twilio credentials not configured' 
-    });
+    return res.status(500).json({ success: false, error: 'Missing credentials' });
   }
 
   try {
-    const message = `Hey ${name}, you've contributed ₹${amount} to Lakshmi Narasima Swamy Youth Association. Thank you for your generosity! 🙏`;
+    const message = `Hey ${name}, you've contributed ₹${amount} to Lakshmi Narasima Swamy Youth Association. Thank you! 🙏`;
 
     const auth = Buffer.from(`${TWILIO_ACCOUNT_SID}:${TWILIO_AUTH_TOKEN}`).toString('base64');
+
+    const formData = new URLSearchParams();
+    formData.append('From', 'whatsapp:+14155238886');
+    formData.append('To', `whatsapp:+91${phoneNumber}`);
+    formData.append('Body', message);
 
     const response = await fetch(
       `https://api.twilio.com/2010-04-01/Accounts/${TWILIO_ACCOUNT_SID}/Messages.json`,
@@ -31,23 +32,18 @@ export default async function handler(req, res) {
         method: 'POST',
         headers: {
           'Authorization': `Basic ${auth}`,
-          'Content-Type': 'application/x-www-form-urlencoded',
         },
-        body: new URLSearchParams({
-          From: 'whatsapp:+14155238886',
-          To: `whatsapp:+91${phoneNumber}`,
-          Body: message,
-        }).toString(),
+        body: formData,
       }
     );
 
     const data = await response.json();
 
     if (!response.ok) {
-      console.error('Twilio error:', data);
       return res.status(response.status).json({
         success: false,
-        error: data.message || 'Failed to send message',
+        error: data.message || data.code || 'Unknown error',
+        details: data,
       });
     }
 
@@ -56,7 +52,6 @@ export default async function handler(req, res) {
       messageSid: data.sid,
     });
   } catch (error) {
-    console.error('WhatsApp send error:', error);
     return res.status(500).json({
       success: false,
       error: error.message,
