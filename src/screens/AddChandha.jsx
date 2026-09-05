@@ -2,6 +2,7 @@ import { useState } from "react";
 import { COLORS, SERIF } from "../theme";
 import { Crest } from "../components/Logo";
 import { supabase } from "../lib/supabaseClient";
+import { sendWhatsAppMessage } from "../lib/twilioClient";
 
 const pageStyle = {
   minHeight: "100vh",
@@ -87,11 +88,20 @@ export default function AddChandha({ onHome, onAdded, onViewList, entryCount }) 
       paid: status === "paid",
     });
 
-    setSaving(false);
-
     if (error) {
+      setSaving(false);
       setSaveError("Could not save that entry. Check your connection and try again.");
       return;
+    }
+
+    // Send WhatsApp message
+    const whatsappResult = await sendWhatsAppMessage(mobile, name, amount);
+
+    setSaving(false);
+
+    if (!whatsappResult.success) {
+      console.warn('WhatsApp message failed:', whatsappResult.error);
+      // Still success even if WhatsApp fails - data is saved
     }
 
     setName("");
