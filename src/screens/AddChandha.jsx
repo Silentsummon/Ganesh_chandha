@@ -61,6 +61,27 @@ export default function AddChandha({ onHome, onAdded, onViewList, entryCount }) 
     if (errors.mobile) setErrors((p) => ({ ...p, mobile: null }));
   };
 
+  const sendWhatsAppMessage = async (phoneNumber, userName, amount) => {
+    try {
+      const response = await fetch('/api/send-whatsapp', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          phoneNumber,
+          name: userName,
+          amount,
+        }),
+      });
+
+      const data = await response.json();
+      console.log('WhatsApp response:', data);
+      return data.success;
+    } catch (error) {
+      console.error('WhatsApp error:', error);
+      return false;
+    }
+  };
+
   const handleAdd = async () => {
     const newErrors = {};
     if (!name.trim()) newErrors.name = "Enter a name";
@@ -87,12 +108,16 @@ export default function AddChandha({ onHome, onAdded, onViewList, entryCount }) 
       paid: status === "paid",
     });
 
-    setSaving(false);
-
     if (error) {
+      setSaving(false);
       setSaveError("Could not save that entry. Check your connection and try again.");
       return;
     }
+
+    // Send WhatsApp message
+    await sendWhatsAppMessage(mobile, name, amount);
+
+    setSaving(false);
 
     setName("");
     setMobile("");
