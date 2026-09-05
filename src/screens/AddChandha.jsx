@@ -1,10 +1,22 @@
 import { useState } from "react";
-import { COLORS, SERIF, pageBase, card } from "../theme";
-import { Watermark, Crest } from "../components/Logo";
+import { COLORS, SERIF } from "../theme";
+import { Crest } from "../components/Logo";
 import { supabase } from "../lib/supabaseClient";
+
+const pageStyle = {
+  minHeight: "100vh",
+  background: `linear-gradient(135deg, rgba(24, 20, 16, 0.85) 0%, rgba(31, 25, 19, 0.85) 100%), url('/bappa-bg.png') center/cover no-repeat fixed`,
+  fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
+  color: COLORS.cream,
+  padding: "40px 20px",
+  boxSizing: "border-box",
+  position: "relative",
+  overflow: "hidden",
+};
 
 export default function AddChandha({ onHome, onAdded, onViewList, entryCount }) {
   const [name, setName] = useState("");
+  const [mobile, setMobile] = useState("");
   const [street, setStreet] = useState("");
   const [amount, setAmount] = useState("");
   const [description, setDescription] = useState("");
@@ -36,10 +48,18 @@ export default function AddChandha({ onHome, onAdded, onViewList, entryCount }) 
   };
 
   const errorText = { fontSize: "12.5px", color: "#B3401E", marginTop: "5px" };
+  const card = {
+    background: COLORS.card,
+    borderRadius: "16px",
+    border: `1px solid ${COLORS.goldDeep}55`,
+    boxShadow: "0 8px 28px rgba(0,0,0,0.35)",
+  };
 
   const handleAdd = async () => {
     const newErrors = {};
     if (!name.trim()) newErrors.name = "Enter a name";
+    if (!mobile.trim()) newErrors.mobile = "Enter a mobile number";
+    if (!/^\d{10}$/.test(mobile.replace(/\D/g, ''))) newErrors.mobile = "Enter a valid 10-digit number";
     if (!street.trim()) newErrors.street = "Enter a street";
     if (!amount || Number(amount) <= 0) newErrors.amount = "Enter an amount";
     if (!status) newErrors.status = "Choose paid or pending";
@@ -54,6 +74,7 @@ export default function AddChandha({ onHome, onAdded, onViewList, entryCount }) 
 
     const { error } = await supabase.from("chandhas").insert({
       name: name.trim(),
+      mobile: mobile.trim(),
       street: street.trim(),
       amount: Number(amount),
       description: description.trim(),
@@ -68,6 +89,7 @@ export default function AddChandha({ onHome, onAdded, onViewList, entryCount }) 
     }
 
     setName("");
+    setMobile("");
     setStreet("");
     setAmount("");
     setDescription("");
@@ -77,8 +99,7 @@ export default function AddChandha({ onHome, onAdded, onViewList, entryCount }) 
   };
 
   return (
-    <div style={pageBase}>
-      <Watermark opacity={0.06} size={480} />
+    <div style={pageStyle}>
       <div style={{ position: "relative", zIndex: 1, maxWidth: "480px", margin: "0 auto" }}>
         <button
           onClick={onHome}
@@ -91,7 +112,7 @@ export default function AddChandha({ onHome, onAdded, onViewList, entryCount }) 
           <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "10px" }}>
             <Crest size={36} />
             <div style={{ fontSize: "11.5px", fontWeight: 700, color: COLORS.gold, letterSpacing: "0.08em" }}>
-              LAKSHMI NARASIMA SWAMY YOUTH ASSOCIATION
+              LAKSHMI NARASIMHA SWAMY YOUTH ASSOCIATION
             </div>
           </div>
           <h1 style={{ fontFamily: SERIF, fontSize: "26px", fontWeight: 700, margin: 0, color: COLORS.goldBright }}>
@@ -112,6 +133,17 @@ export default function AddChandha({ onHome, onAdded, onViewList, entryCount }) 
               onChange={(e) => { setName(e.target.value); if (errors.name) setErrors((p) => ({ ...p, name: null })); }}
             />
             {errors.name && <div style={errorText}>{errors.name}</div>}
+          </div>
+
+          <div style={{ marginBottom: "20px" }}>
+            <label style={label}>Mobile number</label>
+            <input
+              style={{ ...inputBase, borderColor: errors.mobile ? "#D9532F" : inputBase.border }}
+              placeholder="Enter 10-digit mobile number"
+              value={mobile}
+              onChange={(e) => { setMobile(e.target.value); if (errors.mobile) setErrors((p) => ({ ...p, mobile: null })); }}
+            />
+            {errors.mobile && <div style={errorText}>{errors.mobile}</div>}
           </div>
 
           <div style={{ marginBottom: "20px" }}>
