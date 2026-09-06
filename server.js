@@ -10,10 +10,6 @@ app.use(express.json());
 
 const client = new Client({
   authStrategy: new LocalAuth(),
-  puppeteer: {
-    headless: true,
-    args: ['--no-sandbox', '--disable-setuid-sandbox'],
-  },
 });
 
 client.on('qr', (qr) => {
@@ -25,7 +21,6 @@ client.on('ready', () => {
   console.log('✅ WhatsApp is ready!');
 });
 
-// API endpoint
 app.post('/api/send-whatsapp', async (req, res) => {
   const { phoneNumber, name, amount } = req.body;
 
@@ -52,6 +47,6 @@ Jai Ganesh! 🕉️`;
 
 client.initialize();
 
-app.listen(3000, () => {
-  console.log('Server running on http://localhost:3000');
+app.listen(3000, '0.0.0.0', () => {
+  console.log('Server running on http://0.0.0.0:3000');
 });

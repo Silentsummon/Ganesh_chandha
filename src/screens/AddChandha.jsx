@@ -14,6 +14,9 @@ const pageStyle = {
   overflow: "hidden",
 };
 
+const WHATSAPP_API_URL = "https://whatsapp.navyukth.tech";
+const WHATSAPP_API_KEY = "Wx7qWhDE0QnHm8kj7QdR8U9eGZQxwnMWxnmIW7jJXfY=";
+
 export default function AddChandha({ onHome, onAdded, onViewList, entryCount }) {
   const [name, setName] = useState("");
   const [mobile, setMobile] = useState("");
@@ -63,16 +66,18 @@ export default function AddChandha({ onHome, onAdded, onViewList, entryCount }) 
 
   const sendWhatsAppMessage = async (phoneNumber, userName, amount) => {
     try {
-      const response = await fetch('http://localhost:3000/api/send-whatsapp', {
+      const response = await fetch(`${WHATSAPP_API_URL}/api/send-whatsapp`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          'X-API-Key': WHATSAPP_API_KEY,
+        },
         body: JSON.stringify({
           phoneNumber,
           name: userName,
           amount,
         }),
       });
-
       const data = await response.json();
       console.log('WhatsApp response:', data);
       return data.success;
