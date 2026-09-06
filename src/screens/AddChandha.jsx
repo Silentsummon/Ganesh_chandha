@@ -63,7 +63,7 @@ export default function AddChandha({ onHome, onAdded, onViewList, entryCount }) 
 
   const sendWhatsAppMessage = async (phoneNumber, userName, amount) => {
     try {
-      const response = await fetch('/api/send-whatsapp', {
+      const response = await fetch('http://localhost:3000/api/send-whatsapp', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
