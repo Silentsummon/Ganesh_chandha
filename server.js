@@ -10,6 +10,10 @@ app.use(express.json());
 
 const client = new Client({
   authStrategy: new LocalAuth(),
+  puppeteer: {
+    headless: true,
+    args: ['--no-sandbox', '--disable-setuid-sandbox'],
+  },
 });
 
 client.on('qr', (qr) => {
@@ -37,11 +41,11 @@ Jai Ganesh! 🕉️`;
     
     const result = await client.sendMessage(chatId, message);
     
-    console.log(`Message sent! ID: ${result.id.id}`);
+    console.log(`Message sent successfully!`);
     
     res.json({ success: true, message: 'Message sent!', chatId });
   } catch (error) {
-    console.error('Error sending message:', error);
+    console.error('Error sending message:', error.message);
     res.status(500).json({ success: false, error: error.message });
   }
 });
