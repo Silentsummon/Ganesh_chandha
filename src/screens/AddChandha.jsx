@@ -14,8 +14,7 @@ const pageStyle = {
   overflow: "hidden",
 };
 
-const WHATSAPP_API_URL = "https://whatsapp.navyukth.tech";
-const WHATSAPP_API_KEY = "Wx7qWhDE0QnHm8kj7QdR8U9eGZQxwnMWxnmIW7jJXfY=";
+const WHATSAPP_API_URL = "https://api.sadineni.tech";
 
 export default function AddChandha({ onHome, onAdded, onViewList, entryCount }) {
   const [name, setName] = useState("");
@@ -70,7 +69,6 @@ export default function AddChandha({ onHome, onAdded, onViewList, entryCount }) 
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'X-API-Key': WHATSAPP_API_KEY,
         },
         body: JSON.stringify({
           phoneNumber,
