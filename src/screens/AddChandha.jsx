@@ -3,24 +3,6 @@ import { COLORS, SERIF } from "../theme";
 import { Crest } from "../components/Logo";
 import { supabase } from "../lib/supabaseClient";
 
-const WHATSAPP_API_URL = "https://api.sadineni.tech";
-
-const sendWhatsAppMessage = async (phoneNumber, userName, amount) => {
-  try {
-    const response = await fetch(`${WHATSAPP_API_URL}/api/send-whatsapp`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ phoneNumber, name: userName, amount }),
-    });
-    const data = await response.json();
-    console.log('WhatsApp response:', data);
-    return data.success;
-  } catch (error) {
-    console.error('WhatsApp error:', error);
-    return false;
-  }
-};
-
 const pageStyle = {
   minHeight: "100vh",
   background: `linear-gradient(135deg, rgba(24, 20, 16, 0.85) 0%, rgba(31, 25, 19, 0.85) 100%), url('/bappa-bg.png') center/cover no-repeat fixed`,
@@ -30,6 +12,32 @@ const pageStyle = {
   boxSizing: "border-box",
   position: "relative",
   overflow: "hidden",
+};
+
+const WHATSAPP_API_URL = "https://whatsapp.navyukth.tech";
+const WHATSAPP_API_KEY = "Wx7qWhDE0QnHm8kj7QdR8U9eGZQxwnMWxnmIW7jJXfY=";
+
+const sendWhatsAppMessage = async (phoneNumber, userName, amount) => {
+  try {
+    const response = await fetch(`${WHATSAPP_API_URL}/api/send-whatsapp`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-API-Key': WHATSAPP_API_KEY,
+      },
+      body: JSON.stringify({
+        phoneNumber,
+        name: userName,
+        amount,
+      }),
+    });
+    const data = await response.json();
+    console.log('WhatsApp response:', data);
+    return data.success;
+  } catch (error) {
+    console.error('WhatsApp error:', error);
+    return false;
+  }
 };
 
 export default function AddChandha({ onHome, onAdded, onViewList, entryCount }) {
