@@ -17,28 +17,20 @@ const pageStyle = {
 const WHATSAPP_API_URL = "https://whatsapp.navyukth.tech";
 const WHATSAPP_API_KEY = "Wx7qWhDE0QnHm8kj7QdR8U9eGZQxwnMWxnmIW7jJXfY=";
 
-const sendWhatsAppMessage = async (phoneNumber, userName, amount) => {
-  try {
-    const response = await fetch(`${WHATSAPP_API_URL}/api/send-whatsapp`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'X-API-Key': WHATSAPP_API_KEY,
-      },
-      body: JSON.stringify({
-        phoneNumber,
-        name: userName,
-        amount,
-      }),
-    });
-    const data = await response.json();
-    console.log('WhatsApp response:', data);
-    return data.success;
-  } catch (error) {
-    console.error('WhatsApp error:', error);
-    return false;
-  }
-};
+// Fire-and-forget: does NOT block the user's Add flow.
+// The retry-worker (server side) is the source of truth for delivery.
+function triggerWhatsAppSend(phoneNumber, name, amount) {
+  fetch(`${WHATSAPP_API_URL}/api/send-whatsapp`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'X-API-Key': WHATSAPP_API_KEY,
+    },
+    body: JSON.stringify({ phoneNumber, name, amount }),
+  }).catch((err) => {
+    console.warn('WhatsApp trigger failed, retry-worker will pick it up:', err.message);
+  });
+}
 
 export default function AddChandha({ onHome, onAdded, onViewList, entryCount }) {
   const [name, setName] = useState("");
@@ -111,16 +103,19 @@ export default function AddChandha({ onHome, onAdded, onViewList, entryCount }) 
       amount: Number(amount),
       description: description.trim(),
       paid: status === "paid",
+      message_sent: false,
     });
 
+    setSaving(false);
+
     if (error) {
-      setSaving(false);
       setSaveError("Could not save that entry. Check your connection and try again.");
       return;
     }
 
-    await sendWhatsAppMessage(mobile, name, amount);
-    setSaving(false);
+    // Don't await — website stays responsive even if WhatsApp is down.
+    // The retry-worker on the backend owns actual delivery + retries.
+    triggerWhatsAppSend(mobile.trim(), name.trim(), Number(amount));
 
     setName("");
     setMobile("");
